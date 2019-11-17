@@ -10,10 +10,10 @@ var phrasesPool = [
 const startButton = document.getElementsByClassName('btn__reset');
 var letters = [];
 var buttonKey = document.getElementById('qwerty');
-var buttonPressed;
 var letterChoosen;
 var score = 0;
-
+var lifes = 5;
+const ul = document.getElementById('phrase').firstElementChild;
 
 
 
@@ -28,16 +28,16 @@ function getRandomPhrase() {
 //Create <li> with letters and spaces
 function createPhrase() {
        for (let i = 0; i < letters.length ; i++){
-        const ul = document.getElementById('phrase').firstElementChild;
+        
         const li = document.createElement('LI');
         li.textContent = letters[i];
-        if (letters[i] === ' '){
+            if (letters[i] === ' '){
             li.className = 'space';
-        }
-        else{
+            }
+            else{
             li.className = 'letter';
             score++; 
-        }
+            }
         ul.appendChild(li);
        };
     };
@@ -56,21 +56,47 @@ function startGame() {
 
 startButton[0].addEventListener("click", startGame,);
 
+
 // GAME FUNCTION
+function compare(){
 
-
-
-function playGame(e){
-    if (e.target.tagName === 'BUTTON') {
-        let query = e.target.textContent;
-        console.log(query);
-    }
+   
+    for (let i = 0; i < letters.length ; i++){
+            if (letterChoosen === letters[i] ){
+                ul.getElementsByTagName('LI')[i].className = 'letter show';
+                score--;  
+            }
+            else {
+                lifes--;
+            };
+    };
 };
 
 
+function chooseAndCompare(e){
+    if (e.target.tagName === 'BUTTON') {
+        letterChoosen = e.target.textContent;
+    };
+    compare();
+};
 
-buttonKey.addEventListener('click',playGame);
 
+buttonKey.addEventListener('click',chooseAndCompare);
+
+
+
+
+
+//ripete la funzione di gioco finche nn si indovina la frase o si finiscono le vite.
+
+
+//function playGame(){
+  //  do {
+
+    //} 
+//};
+
+//playGame();
 
 
 
