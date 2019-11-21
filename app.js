@@ -1,19 +1,47 @@
+
+const startButton = document.getElementsByClassName('btn__reset');
+
+// create an <h2> below start button to display win or lose message
+
+let overlayPag = document.getElementById('overlay');
+const winLose = document.createElement('H2');
+overlayPag.appendChild(winLose);
+
+
+// all the game functions are inside "gioco" function to reset all the variables on game restart
+
+function gioco() {
+
 var phrasesPool = [
-    "frase one",
-    "frase twoo",
-    "frase three",
-    "frase four",
-    "frase five"
+    "lemon is yellow",
+    "i love starwars movie",
+    "my car is white",
+    "joda is a jedi master",
+    "luke skywalker is a jedi"
 
 ];
 
-const startButton = document.getElementsByClassName('btn__reset');
 var letters = [];
+var lettersGuessed = [];
 var buttonKey = document.getElementById('qwerty');
 var letterChoosen;
-var score = 0;
+var guess ;
 var lifes = 5;
 const ul = document.getElementById('phrase').firstElementChild;
+const ol = document.getElementById('scoreboard').firstElementChild;
+let overlayPage = document.getElementById('overlay');
+
+
+// Create a clone of the phrase, qwery and scoreboard divs to restore them on game restart
+
+var sectionPhrase = document.getElementById('phrase');
+var sectionPhraseClone = sectionPhrase.cloneNode(true);
+var sectionQwerty = document.getElementById('qwerty');
+var sectionQwertyClone = sectionQwerty.cloneNode(true);
+var sectionScoreboard = document.getElementById('scoreboard');
+var sectionScoreboardClone = sectionScoreboard.cloneNode(true);
+
+
 
 
 
@@ -25,7 +53,8 @@ function getRandomPhrase() {
     letters = Array.from(randomPhrase);
 };
 
-//Create <li> with letters and spaces
+//Create <li> with letters and spaces and give them classes
+
 function createPhrase() {
        for (let i = 0; i < letters.length ; i++){
         
@@ -36,67 +65,92 @@ function createPhrase() {
             }
             else{
             li.className = 'letter';
-            score++; 
+            lettersGuessed.push('x');
             }
         ul.appendChild(li);
        };
-    };
-
-
+};
 
 
 // start the game
 
 function startGame() {
-    let overlayPage = document.getElementById('overlay');
     overlayPage.style.display = "none";
     getRandomPhrase();
     createPhrase();
 };
 
-startButton[0].addEventListener("click", startGame,);
+// restore DOM to a clean version to restart a new game.
+
+function endGame() {
+    sectionPhrase.parentNode.replaceChild(sectionPhraseClone, sectionPhrase);
+    sectionQwerty.parentNode.replaceChild(sectionQwertyClone, sectionQwerty); 
+    sectionScoreboard.parentNode.replaceChild(sectionScoreboardClone, sectionScoreboard);
+};
 
 
-// GAME FUNCTION
-function compare(){
+// acquire key click input and compare it with the array of letters
 
-   
-    for (let i = 0; i < letters.length ; i++){
-            if (letterChoosen === letters[i] ){
-                ul.getElementsByTagName('LI')[i].className = 'letter show';
-                score--;  
-            }
-            else {
-                lifes--;
+               function chooseAndCompare(e){
+                
+                            if ((e.target.tagName === 'BUTTON') && (e.target.className !== 'chosen')) {
+                                letterChoosen = e.target.textContent;
+
+                                    for (let j = 0; j < letters.length ; j++){
+                                        if (letterChoosen === letters[j] ){
+                                            ul.getElementsByTagName('LI')[j].className = 'letter show';
+                                            lettersGuessed.shift(); 
+                                            guess = 'true';
+                                        }; 
+                                    };
+
+
+                                     if (guess !== 'true') {
+                                                e.target.className ='chosen';
+                                                e.target.style.backgroundColor = 'red';
+                                                lifes = lifes -1;
+                                                ol.getElementsByTagName('LI')[lifes].firstElementChild.src = "images/lostHeart.png";
+                                            } else {
+                                                e.target.className ='chosen';
+                                                guess = ' ';
+                                            };
+                                
+                            };
+                        
+     // winning condition check
+
+                            if (lifes === 0){
+                                overlayPage.className = 'lose';
+                                overlayPage.style.display = 'flex';
+                                startButton[0].textContent = 'Try again'
+                                winLose.textContent = 'YOU LOSE';
+                                winLose.className = 'title';
+                                startButton[0].addEventListener("click", gioco);
+                            endGame();
+                            
+                            } else if (lettersGuessed.length === 0 ){
+                                overlayPage.className= 'win';
+                                overlayPage.style.display = 'flex';
+                                startButton[0].textContent = 'Play again'
+                                winLose.textContent = 'YOU WIN';
+                                winLose.className = 'title';
+                                startButton[0].addEventListener("click", gioco);
+                            endGame();
+                            };
+
             };
-    };
-};
 
-
-function chooseAndCompare(e){
-    if (e.target.tagName === 'BUTTON') {
-        letterChoosen = e.target.textContent;
-    };
-    compare();
-};
-
-
+startGame();
 buttonKey.addEventListener('click',chooseAndCompare);
 
+};
+
+startButton[0].addEventListener("click", gioco);
 
 
 
+    
 
-//ripete la funzione di gioco finche nn si indovina la frase o si finiscono le vite.
-
-
-//function playGame(){
-  //  do {
-
-    //} 
-//};
-
-//playGame();
-
+ 
 
 
